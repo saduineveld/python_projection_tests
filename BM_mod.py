@@ -1,12 +1,13 @@
 # BM model module
 
-def get_res(alpha,beta,lk_vec,pol_old,lc_pol)
-    kt = math.exp(lk_vec)
-    kn = knext(alpha,kt,lc_pol)
-    lkn = math.log(kn)
-    lcn = pol_old(lkn)
-    Rn = alpha*kn^(alpha-1)
-    RES = lc_pol
+import numpy as np
+
+def get_res(alpha,beta,lk_vec,pol_old,lc_pol):
+    ct = np.exp(lc_pol)
+    kn = knext(alpha,np.exp(lk_vec),ct)
+    lcn = pol_old(np.log(kn))
+    Rn = alpha*kn**(alpha-1)
+    RES = beta*np.exp(-lcn)*Rn*ct-1
     return RES
 
 
@@ -21,8 +22,8 @@ def marg_ut(nu,cc):
     dudc = cc**-nu
     return dudc
 
-def knext(alpha,kt,cc):
-    kn = prod(alpha,kt) - cc
+def knext(alpha,kt,ct):
+    kn = prod(alpha,kt) - ct
     return kn
 
 

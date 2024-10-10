@@ -1,26 +1,30 @@
 import numpy as np
-import math
+# import math
 import matplotlib.pyplot as plt
-from scipy.interpolate import RectBivariateSpline
+from scipy.interpolate import CubicSpline
 
 import BM_mod as BM
 
-k = 2
+# Parameters
 alpha = 0.33
 beta = 0.96
 
-y = BM.prod(alpha,k)
-
-print(k)
-print(alpha)
-print(y)
+max_err = 1e-10
 
 # Construct grid
 nodes = 5
 kss,css = BM.get_ss(alpha,beta)
-lk_vec = np.linspace(math.log(kss)-0.2,math.log(kss)+0.2,nodes)
+lk_vec = np.linspace(np.log(kss)-0.2,np.log(kss)+0.2,nodes)
 
 # Initial guess
-lc_pol = math.log(css)+0.01*(lk_vec - math.log(kss))
-print(lc_pol)
+#lc_pol = np.log(css)+0.01*(lk_vec - np.log(kss))
+lc_pol = np.log(1-alpha*beta) + alpha*lk_vec
 
+# Transfer policy to spline:
+pol_old = CubicSpline(lk_vec,lc_pol)
+
+# Test residual function
+RES = BM.get_res(alpha,beta,lk_vec,pol_old,lc_pol)
+print(RES)
+
+# Solve residual function, until max residual is smaller than tolerance
